@@ -38,7 +38,7 @@ class VkApp:
         #param is API call parameters
         if not access_token:
             raise Exception("Trying to create API without token")
-        self.param = {'access_token': access_token}
+        self.param = {'access_token': access_token, 'v': '5.0'}
 
     def call(self, api, **call_params):
         v = dict()

@@ -183,8 +183,8 @@ class XBMCVkUI_VKSearch_Base(XBMCVkUI_Search_Base):
             self.DoSearchTweaks()
             result = self.api.call(self.apiName, **self.searchTweaks)
             result = self.transformResult(result)
-        if result:
-            for a in result:
+        if result['items']:
+            for a in result['items']:
                 self.ProcessFoundEntry(a)
 
     def transformResult(self, res):

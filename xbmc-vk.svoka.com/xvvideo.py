@@ -155,8 +155,8 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
 
 
     def nextPage(self, v, **params):
-        if v:
-            if int(v[0]) >= self.offset+self.per_page:
+        if v['items']:
+            if int(v['count']) >= self.offset+self.per_page:
                 listItem = xbmcgui.ListItem(__language__(30044)%(1+self.offset/self.per_page))
                 xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=self.params["mode"], offset=self.offset+self.per_page, **params), listItem, True)
 
@@ -169,8 +169,8 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
         xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=ALBUM_VIDEO, owner_id="-"+gid), listItem, True)
 
         v = self.api.call('video.get', gid=gid, count=self.per_page, offset=self.offset)
-        if v:
-            for a in v[1:]:
+        if v['items']:
+            for a in v['items']:
                 self.ProcessFoundEntry(a)
         self.nextPage(v,gid=gid)
 
@@ -182,17 +182,17 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
         xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=ALBUM_VIDEO, owner_id=uid), listItem, True)
 
         v = self.api.call('video.get', uid=uid, count=self.per_page, offset=self.offset)
-        if v:
-            for a in v[1:]:
+        if v['items']:
+            for a in v['items']:
                 self.ProcessFoundEntry(a)
         self.nextPage(v,uid=uid)
 
     def Do_GROUPS(self):
         resp = self.api.call('groups.get',extended=1)
-        groups = resp[1:]
+        groups = resp['items']
         for group in groups:
-            listItem = xbmcgui.ListItem(group['name'], "", group['photo_big'])
-            xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=GROUP_VIDEO, gid=group['gid'], thumb=group['photo_medium'])  , listItem, True)
+            listItem = xbmcgui.ListItem(group['name'], "", group['photo_200'])
+            xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=GROUP_VIDEO, gid=group['id'], thumb=group['photo_100']), listItem, True)
 
 
     def Do_SERIES(self):
@@ -233,13 +233,13 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
         self_vk_id = 0
         v = self.api.call("users.get")
         if v:
-            self_vk_id = v[0]["uid"]
+            self_vk_id = v[0]["id"]
         listItem = xbmcgui.ListItem(__language__(40002))
         xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode=ALBUM_VIDEO, owner_id=self_vk_id), listItem, True)
 
         v = self.api.call("video.get", count=self.per_page, offset=self.offset)
-        if v:
-            for a in v[1:]:
+        if v['items']:
+            for a in v['items']:
                 self.ProcessFoundEntry(a)
         self.nextPage(v)
 
@@ -247,8 +247,8 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
         self.prevPage()
         owner_id = self.params.get("owner_id") or ""
         v = self.api.call("video.getAlbums", owner_id=owner_id)
-        if v:
-            for a in v[1:]:
+        if v['items']:
+            for a in v['items']:
 		title = PrepareString(a["title"])
 		listItem = xbmcgui.ListItem(title, "")
 		xbmcplugin.addDirectoryItem(self.handle, self.GetURL(mode="VIDEO_ALBUM_LIST", album_id=a["album_id"], owner_id=owner_id), listItem, True)
@@ -258,8 +258,8 @@ class XVKVideo(XBMCVkUI_VKSearch_Base):
         self.prevPage()
         owner_id = self.params.get("owner_id") or ""
         v = self.api.call("video.get", count=self.per_page, offset=self.offset, album_id=self.params["album_id"], owner_id=owner_id)
-        if v:
-            for a in v[1:]:
+        if v['items']:
+            for a in v['items']:
                 self.ProcessFoundEntry(a)
         self.nextPage(v)
 
